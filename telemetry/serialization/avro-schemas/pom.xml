@@ -30,6 +30,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
+            <!--генерация классов на основе схемы avro-->
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
@@ -49,6 +50,7 @@
                 </executions>
             </plugin>
 
+            <!--добавить в сборку дополнительные каталоги со сгенерированным исходным кодом-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

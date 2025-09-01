@@ -1,0 +1,15 @@
+collector:
+  kafka:
+    producer:
+      properties:
+        bootstrap.servers: localhost:9092
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: kafka.GeneralAvroSerializer
+      topics:
+        sensors-events: telemetry.sensors.v1
+        hubs-events: telemetry.hubs.v1
+
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org.zalando.logbook: TRACE

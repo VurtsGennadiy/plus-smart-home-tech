@@ -29,7 +29,7 @@ public class DeviceAction {
     /**
      * Перечисление возможных типов действий при срабатывании условия активации сценария.
      */
-    enum Type {
+    public enum Type {
         ACTIVATE,
         DEACTIVATE,
         INVERSE,

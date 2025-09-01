@@ -1,11 +1,11 @@
 package collector.controller;
 
+import collector.handler.hub.HubEventHandler;
+import collector.handler.sensor.SensorEventHandler;
 import collector.model.hub.HubEvent;
 import collector.model.hub.HubEventType;
 import collector.model.sensor.SensorEvent;
 import collector.model.sensor.SensorEventType;
-import collector.handler.sensor.SensorEventHandler;
-import collector.handler.hub.HubEventHandler;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +23,13 @@ public class EventController {
     private final Map<SensorEventType, SensorEventHandler> sensorEventHandlers;
     private final Map<HubEventType, HubEventHandler> hubEventHandlers;
 
-    public EventController(List<SensorEventHandler> sensorEventHandlers, List<HubEventHandler> hubEventHandlers) {
+    public EventController(List<SensorEventHandler> sensorEventHandlers,
+                           List<HubEventHandler> hubEventHandlers) {
         this.sensorEventHandlers = sensorEventHandlers.stream()
                 .collect(Collectors.toMap(SensorEventHandler::getEventType, Function.identity()));
 
         this.hubEventHandlers = hubEventHandlers.stream()
-                .collect(Collectors.toMap(HubEventHandler::getType, Function.identity()));
+                .collect(Collectors.toMap(HubEventHandler::getEventType, Function.identity()));
     }
 
     @PostMapping("/sensors")

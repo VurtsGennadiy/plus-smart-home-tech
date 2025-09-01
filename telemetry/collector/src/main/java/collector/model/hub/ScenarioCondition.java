@@ -29,7 +29,7 @@ public class ScenarioCondition {
     /**
      * Типы условий, которые могут использоваться в сценариях.
      */
-    enum ConditionType {
+    public enum ConditionType {
         MOTION,
         LUMINOSITY,
         SWITCH,
@@ -41,7 +41,7 @@ public class ScenarioCondition {
     /**
      * Операции, которые могут быть использованы в условиях.
      */
-    enum Operation {
+    public enum Operation {
         EQUALS,
         GREATER_THAN,
         LOWER_THAN

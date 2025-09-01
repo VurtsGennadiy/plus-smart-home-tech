@@ -11,6 +11,10 @@
 
     <artifactId>collector</artifactId>
 
+    <properties>
+        <zalando.version>3.9.0</zalando.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
@@ -29,9 +33,22 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.9.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!--Логирование HTTP запросов и ответов-->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-spring-boot-starter</artifactId>
+            <version>${zalando.version}</version>
         </dependency>
     </dependencies>
 

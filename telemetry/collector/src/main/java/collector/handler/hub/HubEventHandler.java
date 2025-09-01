@@ -9,5 +9,5 @@ import collector.model.hub.HubEventType;
 public interface HubEventHandler {
     void handle(HubEvent event);
 
-    HubEventType getType();
+    HubEventType getEventType();
 }

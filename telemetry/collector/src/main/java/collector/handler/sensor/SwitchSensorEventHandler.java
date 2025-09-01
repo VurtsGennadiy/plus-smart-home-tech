@@ -1,17 +1,28 @@
 package collector.handler.sensor;
 
+import collector.kafka.Producer;
 import collector.model.sensor.SensorEvent;
 import collector.model.sensor.SensorEventType;
+import collector.model.sensor.SwitchSensorEvent;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
 
 /**
  * Обработчик события от датчика переключателя
  */
 @Component
-public class SwitchSensorEventHandler implements SensorEventHandler {
+public class SwitchSensorEventHandler extends BaseSensorEventHandler<SwitchSensorAvro> {
+    public SwitchSensorEventHandler(Producer producer) {
+        super(producer);
+    }
+
     @Override
-    public void handle(SensorEvent event) {
-        System.out.println("SwitchSensorEventHandler");
+    protected SwitchSensorAvro mapToAvro(SensorEvent event) {
+        SwitchSensorEvent switchSensorEvent = (SwitchSensorEvent) event;
+
+        return SwitchSensorAvro.newBuilder()
+                .setState(switchSensorEvent.getState())
+                .build();
     }
 
     @Override
