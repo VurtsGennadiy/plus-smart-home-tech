@@ -10,16 +10,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Producer implements AutoCloseable {
     private final KafkaProducer<String, SpecificRecordBase> producer;
-    public final String SENSORS_EVENTS_TOPIC;
-    public final String HUBS_EVENTS_TOPIC;
+    private final TopicResolver topicResolver;
 
-    public Producer(KafkaProducerConfig config) {
+    public Producer(KafkaProducerConfig config, TopicResolver topicResolver) {
         producer = new KafkaProducer<>(config.getProperties());
-        SENSORS_EVENTS_TOPIC = config.getTopics().get("sensors-events");
-        HUBS_EVENTS_TOPIC = config.getTopics().get("hubs-events");
+        this.topicResolver = topicResolver;
     }
 
-    public void send(SpecificRecordBase message, String topic) {
+    public void send(SpecificRecordBase message, TopicType topicType) {
+        String topic = topicResolver.getTopicName(topicType);
         log.info("Отправляю в топик {} сообщение: {}", topic, message);
         ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, message);
         producer.send(record);

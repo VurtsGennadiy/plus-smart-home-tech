@@ -1,6 +1,7 @@
 package collector.handler.sensor;
 
 import collector.kafka.Producer;
+import collector.kafka.TopicType;
 import collector.model.sensor.SensorEvent;
 import collector.model.sensor.SensorEventType;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public abstract class BaseSensorEventHandler<T extends SpecificRecordBase> imple
                 .setPayload(payload)
                 .build();
 
-        producer.send(message, producer.SENSORS_EVENTS_TOPIC);
+        producer.send(message, TopicType.SENSORS_EVENTS_TOPIC);
     }
 
     protected abstract T mapToAvro(SensorEvent event);

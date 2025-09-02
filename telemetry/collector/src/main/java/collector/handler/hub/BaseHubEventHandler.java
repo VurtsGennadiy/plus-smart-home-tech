@@ -1,6 +1,7 @@
 package collector.handler.hub;
 
 import collector.kafka.Producer;
+import collector.kafka.TopicType;
 import collector.model.hub.HubEvent;
 import collector.model.hub.HubEventType;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public abstract class BaseHubEventHandler<T extends SpecificRecordBase> implemen
                 .setPayload(payload)
                 .build();
 
-        producer.send(eventAvro, producer.HUBS_EVENTS_TOPIC);
+        producer.send(eventAvro, TopicType.HUBS_EVENTS_TOPIC);
     }
 
     protected abstract T mapToAvro(HubEvent event);
