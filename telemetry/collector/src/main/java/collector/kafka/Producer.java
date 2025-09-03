@@ -6,6 +6,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 @Slf4j
 public class Producer implements AutoCloseable {
@@ -25,8 +27,7 @@ public class Producer implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        producer.flush();
-        producer.close();
+    public void close() {
+        producer.close(Duration.ofSeconds(10));
     }
 }
