@@ -9,7 +9,10 @@ collector:
         sensors-events: telemetry.sensors.v1
         hubs-events: telemetry.hubs.v1
 
+grpc:
+  server:
+    port: 59091
+
 logging:
   level:
-    ru.yandex.practicum.telemetry: TRACE
-    org.zalando.logbook: TRACE
+    ru.yandex.practicum.telemetry: DEBUG
