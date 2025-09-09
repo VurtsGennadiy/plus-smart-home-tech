@@ -40,7 +40,7 @@ message DeviceRemovedEventProto {
 
 // событие добавления сценария
 message ScenarioAddedEventProto {
-  string id = 1; // уникальное в рамках хаба название сценария
+  string name = 1; // уникальное в рамках хаба название сценария
   repeated ScenarioConditionProto scenario_conditions = 2; // условия для активации сценария
   repeated DeviceActionProto scenario_actions = 3; // действия выполняемые в рамках сценария
 }
@@ -90,5 +90,5 @@ enum ActionTypeProto {
 
 // событие удаления сценария
 message ScenarioRemovedEventProto {
-  string id = 1; // уникальное в рамках хаба название сценария
+  string name = 1; // уникальное в рамках хаба название сценария
 }

@@ -11,14 +11,16 @@
 
     <artifactId>collector</artifactId>
 
-    <properties>
-        <zalando.version>3.9.0</zalando.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
             <artifactId>avro-schemas</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.yandex.practicum</groupId>
+            <artifactId>proto-schemas</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -43,17 +45,17 @@
             <version>3.9.1</version>
         </dependency>
 
+        <!--стартер для создания сервера gRPC-->
+        <dependency>
+            <groupId>net.devh</groupId>
+            <artifactId>grpc-server-spring-boot-starter</artifactId>
+            <version>3.1.0.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <!--Логирование HTTP запросов и ответов-->
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-spring-boot-starter</artifactId>
-            <version>${zalando.version}</version>
         </dependency>
     </dependencies>
 
