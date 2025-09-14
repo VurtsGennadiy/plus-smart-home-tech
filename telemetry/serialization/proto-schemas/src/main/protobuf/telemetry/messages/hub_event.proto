@@ -92,3 +92,11 @@ enum ActionTypeProto {
 message ScenarioRemovedEventProto {
   string name = 1; // уникальное в рамках хаба название сценария
 }
+
+// запрос на исполнение действия
+message DeviceActionRequest {
+  string hub_id = 1; // идентификатор хаба
+  string scenario_name = 2; // название сценария
+  DeviceActionProto action = 3; // действие на исполнение
+  google.protobuf.Timestamp timestamp = 4;
+}
