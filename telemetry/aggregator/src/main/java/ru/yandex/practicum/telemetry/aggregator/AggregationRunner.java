@@ -47,7 +47,7 @@ public class AggregationRunner implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws InterruptedException {
+    public void run(String... args) {
         try {
             // pool loop
             while (true) {
