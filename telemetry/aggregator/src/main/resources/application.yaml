@@ -6,7 +6,7 @@ aggregator:
         key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value.deserializer: ru.yandex.practicum.telemetry.serialization.avro.SensorEventDeserializer
         group.id: telemetry.aggregator
-        auto.offset.reset: earliest # читать данные с начала топика (для новой группы, у которой не зафиксирован офсет)
+        auto.offset.reset: latest # читать данные с конца топика (для новой группы, у которой не зафиксирован офсет)
         max.poll.interval.ms: 300000 # максимальное значение таймаута между запросами на выборку
         max.poll.records: 500
         enable.auto.commit: false # ручное управление оффсетами
