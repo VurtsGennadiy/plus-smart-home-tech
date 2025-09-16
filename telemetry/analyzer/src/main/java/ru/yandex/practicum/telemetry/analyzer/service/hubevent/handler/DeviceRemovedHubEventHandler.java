@@ -33,7 +33,6 @@ public class DeviceRemovedHubEventHandler implements HubEventHandler {
                     .build();
 
             // удаляем также все сценарии, связанные с этим сенсором
-            // TODO подгружаются сущности Condition и Action в мапы, можно ли убрать?
             Set<Scenario> scenarios = scenarioRepository.findScenariosBySensorId(sensor.getId());
             scenarioRepository.deleteAll(scenarios);
 

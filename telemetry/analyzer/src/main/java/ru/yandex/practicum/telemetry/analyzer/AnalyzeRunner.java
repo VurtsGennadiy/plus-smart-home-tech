@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.telemetry.analyzer.service.hubevent.HubEventProcessor;
-import ru.yandex.practicum.telemetry.analyzer.service.SnapshotProcessor;
+import ru.yandex.practicum.telemetry.analyzer.service.snapshot.SnapshotProcessor;
 
 @RequiredArgsConstructor
 @Service

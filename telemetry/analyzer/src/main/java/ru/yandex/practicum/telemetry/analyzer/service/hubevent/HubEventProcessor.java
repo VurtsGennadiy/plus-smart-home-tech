@@ -7,7 +7,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.telemetry.analyzer.config.HubEventKafkaConfig;
+import ru.yandex.practicum.telemetry.analyzer.config.HubEventProcKafkaConfig;
 
 import java.time.Duration;
 import java.util.List;
@@ -22,7 +22,7 @@ public class HubEventProcessor implements Runnable {
     private final KafkaConsumer<String, HubEventAvro> kafkaConsumer;
     private final Duration poolTimeout;
 
-    public HubEventProcessor(HubEventKafkaConfig kafkaConfig, HubEventService hubEventService) {
+    public HubEventProcessor(HubEventProcKafkaConfig kafkaConfig, HubEventService hubEventService) {
         kafkaConsumer = new KafkaConsumer<>(kafkaConfig.getProperties());
         kafkaConsumer.subscribe(List.of(kafkaConfig.getTopic()));
         poolTimeout = kafkaConfig.getPoolTimeout();
@@ -31,7 +31,7 @@ public class HubEventProcessor implements Runnable {
 
     @PreDestroy
     public void shutdown() {
-        log.trace("Завершение работы, посылаю wakeup в kafka consumer");
+        log.trace("Завершение работы HubEventProcessor, посылаю wakeup в kafka consumer");
         kafkaConsumer.wakeup();
     }
 

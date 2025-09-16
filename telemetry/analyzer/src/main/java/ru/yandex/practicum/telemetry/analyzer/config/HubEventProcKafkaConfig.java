@@ -10,7 +10,7 @@ import java.util.Properties;
 @ConfigurationProperties("hub-event-proc.kafka.consumer")
 @RequiredArgsConstructor
 @Getter
-public class HubEventKafkaConfig {
+public class HubEventProcKafkaConfig {
     private final Properties properties;
     private final String topic;
     private final Duration poolTimeout;
