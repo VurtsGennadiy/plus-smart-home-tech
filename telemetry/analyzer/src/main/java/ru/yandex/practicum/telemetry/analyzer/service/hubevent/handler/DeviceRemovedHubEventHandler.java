@@ -7,19 +7,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.dal.entity.HubEventType;
-import ru.yandex.practicum.telemetry.analyzer.dal.entity.Scenario;
 import ru.yandex.practicum.telemetry.analyzer.dal.entity.Sensor;
-import ru.yandex.practicum.telemetry.analyzer.dal.repository.ScenarioRepository;
 import ru.yandex.practicum.telemetry.analyzer.dal.repository.SensorRepository;
 
-import java.util.Set;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class DeviceRemovedHubEventHandler implements HubEventHandler {
     private final SensorRepository sensorRepository;
-    private final ScenarioRepository scenarioRepository;
 
     @Override
     @Transactional
@@ -32,13 +28,8 @@ public class DeviceRemovedHubEventHandler implements HubEventHandler {
                     .id(payload.getId())
                     .build();
 
-            // удаляем также все сценарии, связанные с этим сенсором
-            Set<Scenario> scenarios = scenarioRepository.findScenariosBySensorId(sensor.getId());
-            scenarioRepository.deleteAll(scenarios);
-
-            log.info("Removed sensor: '{}' and scenarios: {} from hub: '{}'",
+            log.info("Removed sensor: '{}' from hub: '{}'",
                     sensor.getId(),
-                    scenarios.stream().map(Scenario::getName).toList(),
                     sensor.getHubId());
 
             sensorRepository.delete(sensor);

@@ -47,6 +47,7 @@
         </dependency>
 
         <!--стартер для создания gRPC-клиента.-->
+        <!--https://yidongnan.github.io/grpc-spring-boot-starter/en/-->
         <dependency>
             <groupId>net.devh</groupId>
             <artifactId>grpc-client-spring-boot-starter</artifactId>

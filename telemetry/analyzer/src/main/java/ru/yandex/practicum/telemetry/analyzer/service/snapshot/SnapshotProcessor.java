@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
@@ -27,13 +28,14 @@ import java.util.Map;
  */
 @Slf4j
 @Service
+@Transactional
 public class SnapshotProcessor implements Runnable {
     private final KafkaConsumer<String, SensorsSnapshotAvro> kafkaConsumer;
     private final Duration poolTimeout;
     private final SnapshotService snapshotService;
 
     @GrpcClient("hub-router")
-    HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
+    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
     public SnapshotProcessor(SnapshotProcKafkaConfig kafkaConfig,
                              SnapshotService snapshotService) {
