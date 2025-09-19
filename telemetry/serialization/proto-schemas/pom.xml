@@ -12,11 +12,14 @@
     <artifactId>proto-schemas</artifactId>
 
     <dependencies>
+        <!--Предоставляет клиентские и серверные заглушки (stubs),
+         которые позволяют вызывать gRPC-сервисы и реализовывать их.-->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
         </dependency>
 
+        <!--API for gRPC over Protocol Buffers, including tools for serializing and de-serializing protobuf messages.-->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
@@ -24,6 +27,7 @@
 
         <!-- Until gRPC generator library moves to generated jakarta instead of javax -->
         <!-- https://github.com/grpc/grpc-java/issues/9179 -->
+        <!--Совместимость аннотаций javax (которые генерирует protoc) и jakarta (использует Spring)-->
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
@@ -39,13 +43,19 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
+            <!--генерация классов на основе схем proto-->
+            <!--https://github.com/ascopes/protobuf-maven-plugin-->
             <plugin>
                 <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
 
                 <configuration>
+                    <!--Здесь задаётся версия компилятора protoc — официального компилятора Protocol Buffers от Google.
+                    Плагин автоматически скачает и использует эту версию для генерации кода.-->
                     <protocVersion>${protobuf.version}</protocVersion>
 
+                    <!--отдельный плагин, который protoc вызывает после генерации базовых классов. Для того чтобы
+                    дополнительно сгенерировать код для rpc сервисов. Плагин будет автоматически скачан из maven-central-->
                     <binaryMavenPlugins>
                         <binaryMavenPlugin>
                             <groupId>io.grpc</groupId>
@@ -64,6 +74,7 @@
                 </executions>
             </plugin>
 
+            <!--добавить в сборку дополнительные каталоги со сгенерированным исходным кодом-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
