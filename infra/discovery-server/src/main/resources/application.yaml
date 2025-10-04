@@ -1,0 +1,11 @@
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false # отключает регистрацию сервера в реестре сервисов (так как он сам является сервером Eureka)
+    fetchRegistry: false # отключает получение реестра сервисов (так как сервер не должен получать информацию о себе)
+    serviceUrl: # указывает URL для обмена информацией с другими Eureka серверами (в данном случае только один сервер)
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

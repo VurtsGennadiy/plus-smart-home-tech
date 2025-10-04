@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="kafka-hubs" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="#!/bin/bash # Скрипт: start-kafka-consumer.sh # Назначение: запуск Kafka consumer для топика telemetry.hubs.v1 CONTAINER_NAME=&quot;kafka&quot; TOPIC=&quot;telemetry.hubs.v1&quot; BOOTSTRAP_SERVER=&quot;localhost:9092&quot; echo &quot;🚀 Запускаем Kafka consumer для топика: $TOPIC&quot; echo &quot;Контейнер: $CONTAINER_NAME&quot; docker exec -it &quot;$CONTAINER_NAME&quot; bash /bin/kafka-console-consumer --bootstrap-server &quot;$BOOTSTRAP_SERVER&quot; --topic &quot;$TOPIC&quot;" />
+    <option name="SCRIPT_TEXT" value="#!/bin/bash # Скрипт: start-kafka-consumer.sh # Назначение: запуск Kafka consumer для топика telemetry.hubs.v1 CONTAINER_NAME=&quot;kafka&quot; TOPIC=&quot;telemetry.hubs.v1&quot; BOOTSTRAP_SERVER=&quot;localhost:9092&quot; echo &quot;🚀 Запускаем Kafka consumer для топика: $TOPIC&quot; echo &quot;Контейнер: $CONTAINER_NAME&quot; docker exec -it &quot;$CONTAINER_NAME&quot; bash /bin/kafka-console-consumer --bootstrap-infra &quot;$BOOTSTRAP_SERVER&quot; --topic &quot;$TOPIC&quot;" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="$PROJECT_DIR$/kafka-console-consumer-hubs.sh" />
     <option name="SCRIPT_OPTIONS" value="" />
