@@ -50,7 +50,7 @@ services:
     environment:
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=telemetry_analyzer
+      - POSTGRES_DB=smart_home
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s

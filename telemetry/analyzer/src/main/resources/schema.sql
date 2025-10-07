@@ -1,5 +1,7 @@
+CREATE SCHEMA IF NOT EXISTS "telemetry_analyzer";
+
 -- создаём таблицу scenarios
-CREATE TABLE IF NOT EXISTS scenarios (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.scenarios (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     hub_id VARCHAR,
     name VARCHAR,
@@ -7,13 +9,13 @@ CREATE TABLE IF NOT EXISTS scenarios (
 );
 
 -- создаём таблицу sensors
-CREATE TABLE IF NOT EXISTS sensors (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.sensors (
     id VARCHAR PRIMARY KEY,
     hub_id VARCHAR
 );
 
 -- создаём таблицу conditions
-CREATE TABLE IF NOT EXISTS conditions (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.conditions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type VARCHAR,
     operation VARCHAR,
@@ -21,14 +23,14 @@ CREATE TABLE IF NOT EXISTS conditions (
 );
 
 -- создаём таблицу actions
-CREATE TABLE IF NOT EXISTS actions (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.actions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     type VARCHAR,
     value INTEGER
 );
 
 -- создаём таблицу scenario_conditions, связывающую сценарий, датчик и условие активации сценария
-CREATE TABLE IF NOT EXISTS scenario_conditions (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.scenario_conditions (
     scenario_id BIGINT REFERENCES scenarios(id),
     sensor_id VARCHAR REFERENCES sensors(id),
     condition_id BIGINT REFERENCES conditions(id),
@@ -36,7 +38,7 @@ CREATE TABLE IF NOT EXISTS scenario_conditions (
 );
 
 -- создаём таблицу scenario_actions, связывающую сценарий, датчик и действие, которое нужно выполнить при активации сценария
-CREATE TABLE IF NOT EXISTS scenario_actions (
+CREATE TABLE IF NOT EXISTS telemetry_analyzer.scenario_actions (
     scenario_id BIGINT REFERENCES scenarios(id),
     sensor_id VARCHAR REFERENCES sensors(id),
     action_id BIGINT REFERENCES actions(id),
