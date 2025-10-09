@@ -1,17 +1,18 @@
-package dal.model;
+package ru.yandex.practicum.commerce.shoppingstore.dal.model;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Table(name = "products")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product {
     @Id
@@ -20,13 +21,13 @@ public class Product {
     UUID id;
 
     @Column(name = "name", nullable = false)
-    String name;
+    String productName;
 
     @Column(name = "description")
     String description;
 
     @Column(name = "image_src")
-    String imageSource;
+    String imageSrc;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
@@ -39,6 +40,9 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "product_state", nullable = false)
     ProductState productState;
+
+    @Column(name = "price", nullable = false)
+    BigDecimal price;
 }
 
 

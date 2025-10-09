@@ -1,4 +1,4 @@
-package dal.model;
+package ru.yandex.practicum.commerce.shoppingstore.dal.model;
 
 /**
  * Пользователей витрины вряд ли интересует точное количество товаров в магазине — скорее, степень их доступности.

@@ -1,4 +1,4 @@
-package dal.model;
+package ru.yandex.practicum.commerce.shoppingstore.dal.model;
 
 /**
  * Категория товара:
@@ -9,5 +9,5 @@ package dal.model;
 public enum ProductCategory {
     CONTROL,
     SENSORS,
-    LIGHTNING
+    LIGHTING
 }
