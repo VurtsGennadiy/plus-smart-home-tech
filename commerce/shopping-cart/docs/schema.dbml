@@ -1,0 +1,13 @@
+table carts {
+  cart_id uuid  [pk]
+  username varchar
+}
+
+table cart_products {
+  cart_id uuid  [pk]
+  product_id uuid [pk]
+  quantity int
+}
+
+ref: carts.cart_id < cart_products.cart_id
+
