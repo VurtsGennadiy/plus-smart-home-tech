@@ -1,8 +1,11 @@
-package ru.yandex.practicum.commerce.shoppingstore.dal.model;
+package ru.yandex.practicum.commerce.shoppingstore.dal;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.yandex.practicum.commerce.interaction.dto.store.ProductCategory;
+import ru.yandex.practicum.commerce.interaction.dto.store.ProductState;
+import ru.yandex.practicum.commerce.interaction.dto.store.QuantityState;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,7 +21,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    UUID id;
+    UUID productId;
 
     @Column(name = "name", nullable = false)
     String productName;

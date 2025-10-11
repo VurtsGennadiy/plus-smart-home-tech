@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoppingstore;
+package ru.yandex.practicum.commerce.warehouse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,8 +7,8 @@ import ru.yandex.practicum.commerce.interaction.exception.ExceptionHandlingConfi
 
 @SpringBootApplication
 @Import(ExceptionHandlingConfig.class)
-public class ShoppingStore {
+public class Warehouse {
     public static void main(String[] args) {
-        SpringApplication.run(ShoppingStore.class);
+        SpringApplication.run(Warehouse.class, args);
     }
 }

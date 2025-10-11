@@ -2,8 +2,9 @@ package ru.yandex.practicum.commerce.shoppingstore.service;
 
 import org.springframework.data.domain.Pageable;
 import ru.yandex.practicum.commerce.interaction.dto.PageDto;
-import ru.yandex.practicum.commerce.shoppingstore.dal.ProductDto;
-import ru.yandex.practicum.commerce.shoppingstore.dal.model.ProductCategory;
+import ru.yandex.practicum.commerce.interaction.dto.store.SetProductQuantityStateRequest;
+import ru.yandex.practicum.commerce.interaction.dto.store.ProductDto;
+import ru.yandex.practicum.commerce.interaction.dto.store.ProductCategory;
 
 import java.util.UUID;
 
@@ -17,4 +18,6 @@ public interface ShoppingService {
     ProductDto updateProduct(ProductDto productDto);
 
     boolean removeProduct(UUID productId);
+
+    boolean setProductQuantityState(SetProductQuantityStateRequest request);
 }
