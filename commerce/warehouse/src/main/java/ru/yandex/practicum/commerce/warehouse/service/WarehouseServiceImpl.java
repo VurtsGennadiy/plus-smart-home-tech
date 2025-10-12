@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.warehouse.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WarehouseServiceImpl implements WarehouseService {
     private final ProductStockRepository stockRepository;
     private final ProductAttributesRepository attributesRepository;
@@ -62,6 +64,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional(readOnly = true)
     public BookedProductsDto checkStocks(CartDto cart) {
+        log.info("Check stocks for cart {}", cart.getProducts());
         Map<UUID, Integer> cartProducts = cart.getProducts();
         List<ProductStockPK> productStockPKs = cartProducts.keySet().stream()
                 .map(productId -> new ProductStockPK(productId, address.getId())).toList();

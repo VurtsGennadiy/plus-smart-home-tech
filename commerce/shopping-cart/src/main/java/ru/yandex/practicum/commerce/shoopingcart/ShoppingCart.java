@@ -8,7 +8,7 @@ import ru.yandex.practicum.commerce.interaction.exception.ExceptionHandlingConfi
 
 @SpringBootApplication
 @Import(ExceptionHandlingConfig.class)
-@EnableFeignClients
+@EnableFeignClients("ru.yandex.practicum.commerce.interaction")
 public class ShoppingCart {
     public static void main(String[] args) {
         SpringApplication.run(ShoppingCart.class);

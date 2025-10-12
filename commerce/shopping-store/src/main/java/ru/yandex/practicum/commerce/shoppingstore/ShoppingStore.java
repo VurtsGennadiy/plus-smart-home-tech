@@ -2,11 +2,13 @@ package ru.yandex.practicum.commerce.shoppingstore;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.commerce.interaction.exception.ExceptionHandlingConfig;
 
 @SpringBootApplication
 @Import(ExceptionHandlingConfig.class)
+@EnableFeignClients("ru.yandex.practicum.commerce.interaction")
 public class ShoppingStore {
     public static void main(String[] args) {
         SpringApplication.run(ShoppingStore.class);

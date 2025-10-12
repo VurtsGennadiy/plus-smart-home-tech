@@ -3,6 +3,8 @@ package ru.yandex.practicum.commerce.shoopingcart.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+import ru.yandex.practicum.commerce.interaction.client.WarehouseClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoopingcart.dal.Cart;
@@ -18,6 +20,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
+    private final WarehouseClient warehouseClient;
+    private final TransactionTemplate transactionTemplate;
 
     @Override
     public CartDto getCart(String username) {
@@ -27,18 +31,21 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional
     public CartDto putProduct(String username, Map<UUID, Integer> productQuantityMap) {
         Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         Cart cartToUpdate = cartOptional.orElse(new Cart(username));
 
-        Map<UUID, Integer> cartProducts = cartToUpdate.getProducts();
-        for(Map.Entry<UUID, Integer> entryForAdd : productQuantityMap.entrySet()) {
-            cartProducts.compute(entryForAdd.getKey(),
-                    (key, value) -> value == null ? entryForAdd.getValue() : value + entryForAdd.getValue());
-        }
+        warehouseClient.checkStocks(new CartDto(cartToUpdate.getId(), productQuantityMap));
 
-        cartRepository.save(cartToUpdate);
+        Map<UUID, Integer> cartProducts = cartToUpdate.getProducts();
+        Cart updatedCart = transactionTemplate.execute(status -> {
+            for(Map.Entry<UUID, Integer> entryForAdd : productQuantityMap.entrySet()) {
+                cartProducts.compute(entryForAdd.getKey(),
+                        (key, value) -> value == null ? entryForAdd.getValue() : value + entryForAdd.getValue());
+            }
+            return cartRepository.save(cartToUpdate);
+        });
+
         return new CartDto(cartToUpdate.getId(), cartProducts);
     }
 

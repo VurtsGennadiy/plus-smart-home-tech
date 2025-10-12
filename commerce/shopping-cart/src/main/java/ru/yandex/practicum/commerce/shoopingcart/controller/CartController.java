@@ -3,6 +3,7 @@ package ru.yandex.practicum.commerce.shoopingcart.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.commerce.interaction.client.ShoppingCartClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.cart.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoopingcart.exception.NotAuthorizedUserException;
@@ -15,9 +16,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/shopping-cart")
 @RequiredArgsConstructor
-public class CartController {
+public class CartController implements ShoppingCartClient {
     private final CartService cartService;
 
+    @Override
     @GetMapping
     public CartDto getCart(@RequestParam(required = false) String username) {
         if (username == null) {
@@ -26,6 +28,7 @@ public class CartController {
         return cartService.getCart(username);
     }
 
+    @Override
     @PutMapping
     public CartDto putProduct(@RequestParam(required = false) String username,
                               @RequestBody Map<UUID, Integer> productQuantityMap) {
@@ -35,6 +38,7 @@ public class CartController {
         return cartService.putProduct(username, productQuantityMap);
     }
 
+    @Override
     @DeleteMapping
     public void deleteCart(@RequestParam(required = false) String username) {
         if (username == null) {
@@ -43,6 +47,7 @@ public class CartController {
         cartService.deleteCart(username);
     }
 
+    @Override
     @PostMapping("/remove")
     public CartDto remove(@RequestParam(required = false) String username,
                           @RequestBody List<UUID> products) {
@@ -52,6 +57,7 @@ public class CartController {
         return cartService.remove(username, products);
     }
 
+    @Override
     @PostMapping("/change-quantity")
     public CartDto changeQuantity(@RequestParam(required = false) String username,
                                   @RequestBody @Valid ChangeProductQuantityRequest request) {
