@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class AddressDto {
     String country;
     String city;

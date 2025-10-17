@@ -3,6 +3,7 @@ package ru.yandex.practicum.commerce.interaction.dto.cart;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@ToString
 public class CartDto {
     UUID ShoppingCartId;
 

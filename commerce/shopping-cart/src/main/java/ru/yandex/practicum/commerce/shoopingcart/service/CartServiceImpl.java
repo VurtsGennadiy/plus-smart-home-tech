@@ -7,6 +7,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ru.yandex.practicum.commerce.interaction.client.WarehouseClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.cart.ChangeProductQuantityRequest;
+import ru.yandex.practicum.commerce.interaction.logging.Loggable;
 import ru.yandex.practicum.commerce.shoopingcart.dal.Cart;
 import ru.yandex.practicum.commerce.shoopingcart.dal.CartRepository;
 import ru.yandex.practicum.commerce.shoopingcart.exception.NoProductsInShoppingCartException;
@@ -24,6 +25,7 @@ public class CartServiceImpl implements CartService {
     private final TransactionTemplate transactionTemplate;
 
     @Override
+    @Loggable
     public CartDto getCart(String username) {
         Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         Cart cart = cartOptional.orElse(new Cart(username));
@@ -31,6 +33,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Loggable
     public CartDto putProduct(String username, Map<UUID, Integer> productQuantityMap) {
         Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         Cart cartToUpdate = cartOptional.orElse(new Cart(username));
@@ -51,12 +54,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
+    @Loggable
     public void deleteCart(String username) {
         cartRepository.deleteByUsername(username);
     }
 
     @Override
     @Transactional
+    @Loggable
     public CartDto remove(String username, List<UUID> products) {
         Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         Cart cart = cartOptional.orElseThrow(() ->
@@ -75,6 +80,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
+    @Loggable
     public CartDto changeQuantity(String username, ChangeProductQuantityRequest request) {
         Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         Cart cart = cartOptional.orElseThrow(() ->

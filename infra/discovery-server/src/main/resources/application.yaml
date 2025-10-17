@@ -1,6 +1,9 @@
 server:
   port: 8761
 
+spring:
+  output.ansi.enabled: ALWAYS
+
 eureka:
   instance:
     hostname: localhost

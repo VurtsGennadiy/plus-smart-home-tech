@@ -8,7 +8,7 @@ import ru.yandex.practicum.commerce.interaction.dto.store.ProductCategory;
 
 import java.util.UUID;
 
-public interface ShoppingService {
+public interface StoreService {
     ProductDto createProduct(ProductDto productDto);
 
     ProductDto getProduct(UUID productId);

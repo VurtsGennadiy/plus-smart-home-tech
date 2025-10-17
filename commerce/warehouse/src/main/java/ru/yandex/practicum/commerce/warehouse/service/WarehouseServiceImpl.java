@@ -10,6 +10,7 @@ import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddProductToWareho
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddressDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction.logging.Loggable;
 import ru.yandex.practicum.commerce.warehouse.dal.entity.Address;
 import ru.yandex.practicum.commerce.warehouse.dal.entity.ProductAttributes;
 import ru.yandex.practicum.commerce.warehouse.dal.entity.ProductStock;
@@ -43,6 +44,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
+    @Loggable
     public void addNewProduct(NewProductInWarehouseRequest request) {
         if (attributesRepository.existsById(request.getProductId())) {
             throw new SpecifiedProductAlreadyInWarehouseException(
@@ -63,6 +65,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional(readOnly = true)
+    @Loggable
     public BookedProductsDto checkStocks(CartDto cart) {
         log.info("Check stocks for cart {}", cart.getProducts());
         Map<UUID, Integer> cartProducts = cart.getProducts();
@@ -117,6 +120,7 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     @Override
     @Transactional
+    @Loggable
     public void receiveProduct(AddProductToWarehouseRequest request) {
         if (!attributesRepository.existsById(request.getProductId())) {
             throw new NoSpecifiedProductInWarehouseException(
@@ -130,6 +134,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Loggable
     public AddressDto getAddress() {
         return address.toDto();
     }

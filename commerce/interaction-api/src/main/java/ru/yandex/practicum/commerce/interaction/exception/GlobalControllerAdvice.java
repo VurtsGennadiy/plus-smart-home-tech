@@ -1,6 +1,7 @@
 package ru.yandex.practicum.commerce.interaction.exception;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,6 +16,7 @@ import java.util.Map;
  */
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -38,6 +40,7 @@ public class GlobalControllerAdvice {
         });
 
         ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), userMessage.toString().strip());
+        log.warn("Invalid request, validation exception: {}", ex.getMessage());
         return new ResponseEntity<>(errorResponse, responseStatus);
     }
 
@@ -45,12 +48,14 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         HttpStatus responseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
+        log.error("Error:", ex);
         return new ResponseEntity<>(errorResponse, responseStatus);
     }
 
     @ExceptionHandler
     public ResponseEntity<String> handleFeignException(FeignException ex) {
         HttpStatus responseStatus = HttpStatus.valueOf(ex.status());
+        log.error("Error executing request from feign client:", ex);
         return ResponseEntity
                 .status(responseStatus)
                 .header("Content-Type", "application/json")
