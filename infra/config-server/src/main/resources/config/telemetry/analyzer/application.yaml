@@ -1,0 +1,61 @@
+spring:
+  sql.init.mode: always
+  output.ansi.enabled: ALWAYS
+
+  jpa:
+    hibernate.ddl-auto: none
+    properties:
+      hibernate.format_sql: true
+      default_schema: telemetry_analyzer
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/telemetry_analyzer
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+
+hub-event-proc:
+  kafka:
+    consumer:
+      properties:
+        bootstrap.servers: localhost:9092
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.telemetry.serialization.avro.HubEventDeserializer
+        group.id: telemetry.analyzer.debug1
+        auto.offset.reset: latest # читать данные с конца топика (для новой группы, у которой не зафиксирован офсет)
+        max.poll.interval.ms: 300000 # максимальное значение таймаута между запросами на выборку
+        max.poll.records: 500
+        enable.auto.commit: false # ручное управление оффсетами
+      topic: telemetry.hubs.v1
+      pool-timeout: 10000ms # таймаут пуллинга
+
+snapshot-proc:
+  kafka:
+    consumer:
+      properties:
+        bootstrap.servers: localhost:9092
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.telemetry.serialization.avro.SensorsSnapshotAvroDeserializer
+        group.id: telemetry.analyzer.snapshot.debug1
+        auto.offset.reset: latest
+        max.poll.interval.ms: 300000
+        max.poll.records: 500
+        enable.auto.commit: false
+      topic: telemetry.snapshots.v1
+      pool-timeout: 10000ms
+
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:59090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
+logging:
+  file:
+    name: logs/telemetry-analyzer.log
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org.hibernate.SQL: DEBUG
+    org.springframework.orm.jpa: DEBUG

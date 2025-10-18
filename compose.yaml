@@ -48,11 +48,81 @@ services:
     ports:
       - "6543:5432"
     environment:
-      - POSTGRES_USER=dbuser
-      - POSTGRES_PASSWORD=12345
-      - POSTGRES_DB=telemetry_analyzer
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=smart_home
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
+
+  # ------ Сервисы инфраструктуры ------
+
+  discovery-server:
+    container_name: discovery-server
+    build: ./infra/discovery-server
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 12s
+
+  config-server:
+    container_name: config-server
+    build: ./infra/config-server
+    environment:
+      - SERVER_PORT=8762
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8762/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ------ Сервисы коммерции ------
+
+  shopping-store:
+    container_name: shopping-store
+    build: ./commerce/shopping-store
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+    depends_on:
+      config-server:
+        condition: service_healthy
+    restart: on-failure
+
+  shopping-cart:
+    container_name: shopping-cart
+    build: ./commerce/shopping-cart
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+    depends_on:
+      config-server:
+        condition: service_healthy
+    restart: on-failure
+
+  warehouse:
+    container_name: warehouse
+    build: ./commerce/warehouse
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+    depends_on:
+      config-server:
+        condition: service_healthy
+    restart: on-failure
+
+
+

@@ -1,0 +1,27 @@
+aggregator:
+  kafka:
+    consumer:
+      properties:
+        bootstrap.servers: localhost:9092
+        key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value.deserializer: ru.yandex.practicum.telemetry.serialization.avro.SensorEventDeserializer
+        group.id: telemetry.aggregator
+        auto.offset.reset: latest # читать данные с конца топика (для новой группы, у которой не зафиксирован офсет)
+        max.poll.interval.ms: 300000 # максимальное значение таймаута между запросами на выборку
+        max.poll.records: 500
+        enable.auto.commit: false # ручное управление оффсетами
+      topics:
+        sensors-events: telemetry.sensors.v1
+      pool-timeout: 10000ms # таймаут пуллинга
+
+    producer:
+      properties:
+        bootstrap.servers: localhost:9092
+        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+        value.serializer: ru.yandex.practicum.telemetry.serialization.avro.GeneralAvroSerializer
+      topics:
+        sensors-snapshots: telemetry.snapshots.v1
+
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
