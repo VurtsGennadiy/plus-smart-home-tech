@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ConfigServer" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.infra.ConfigServer" />
+    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.infra.config.ConfigServer" />
     <module name="config-server" />
     <extension name="coverage">
       <pattern>

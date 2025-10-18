@@ -1,0 +1,26 @@
+server.port: 8080
+
+spring:
+  application:
+    name: gateway
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+  instance:
+    preferIpAddress: true # Использовать IP-адрес машины вместо имени хоста
+    hostname: localhost
+    instance-id: "${spring.application.name}:${random.value}" # полезно при запуске нескольких экземпляров сервиса, чтобы не совпали имена
+    leaseRenewalIntervalInSeconds: 10 # Как часто (в секундах) сервис отправляет "пульс" (heartbeat) на сервер Eureka, чтобы подтвердить, что он жив

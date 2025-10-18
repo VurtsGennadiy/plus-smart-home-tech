@@ -1,0 +1,24 @@
+spring:
+  output.ansi.enabled: ALWAYS
+  cloud:
+    gateway:
+      discovery.locator.enabled: true # использовать Discovery Service.
+      routes: # описание роутов
+        - id: shopping_cart_service_route # название роута
+          uri: lb://shopping-cart/**  # путь, на который будет передаваться запрос, lb - найти сервис с помощью балансировщика нагрузки
+
+          predicates: # условия, по которым определяется должен ли роут обрабатывать запрос
+            - Path=/shopping-cart
+          filters: # фильтры для модификации запроса перед его отправкой в сервис, или ответа клиенту
+            - PrefixPath=/api/v1 # добавляет префикс в начало пути запроса
+
+        - id: shopping_store_service_route
+          uri: lb://shopping-store
+          predicates:
+            - Path=/shopping-store/**
+          filters:
+            - PrefixPath=/api/v1
+            - name: Retry
+              args:
+                retries: 3
+                statuses: NOT_FOUND

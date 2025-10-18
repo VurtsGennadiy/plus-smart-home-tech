@@ -11,7 +11,7 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/commerce_shopping_store
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/commerce_warehouse
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:password}
 

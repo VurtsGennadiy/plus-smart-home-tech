@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="DiscoveryServer" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.infra.discovery.DiscoveryServer" />
-    <module name="discovery-server" />
+  <configuration default="false" name="Gateway" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.infra.gateway.Gateway" />
+    <module name="gateway" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="ru.yandex.practicum.commerce.shoopingcart.*" />
