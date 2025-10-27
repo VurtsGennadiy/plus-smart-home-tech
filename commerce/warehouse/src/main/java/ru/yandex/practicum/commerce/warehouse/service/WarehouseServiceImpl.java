@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddressDto;
+import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.interaction.logging.Loggable;

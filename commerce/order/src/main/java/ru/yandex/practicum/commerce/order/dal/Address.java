@@ -1,9 +1,11 @@
-package ru.yandex.practicum.commerce.warehouse.dal.entity;
+package ru.yandex.practicum.commerce.order.dal;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "addresses")
@@ -13,14 +15,12 @@ import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     @Column(name = "address_id")
-    @EqualsAndHashCode.Include
-    Short id;
+    UUID addressId;
 
     @Column(name = "country", nullable = false)
     String country;
@@ -36,14 +36,4 @@ public class Address {
 
     @Column(name = "flat", nullable = false)
     String flat;
-
-    public AddressDto toDto() {
-        return AddressDto.builder()
-                .country(country)
-                .city(city)
-                .street(street)
-                .house(house)
-                .flat(flat)
-                .build();
-    }
 }

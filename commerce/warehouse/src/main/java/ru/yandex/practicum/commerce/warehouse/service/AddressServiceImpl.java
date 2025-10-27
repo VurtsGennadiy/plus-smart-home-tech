@@ -33,7 +33,8 @@ public class AddressServiceImpl implements AddressService {
                     .flat("ADDRESS_2")
                     .build();
 
-            addressRepository.saveAll(List.of(address1, address2));
+            //addressRepository.saveAll(List.of(address1, address2));
+            addressRepository.saveAll(List.of(address1)); // убираю рандомность склада, чтобы не городить костыли
         }
     }
 

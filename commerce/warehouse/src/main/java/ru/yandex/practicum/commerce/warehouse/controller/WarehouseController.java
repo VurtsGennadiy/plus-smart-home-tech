@@ -6,10 +6,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.interaction.client.WarehouseClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddressDto;
+import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
+import ru.yandex.practicum.commerce.interaction.dto.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
 import ru.yandex.practicum.commerce.warehouse.service.WarehouseService;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/warehouse")
@@ -39,5 +43,17 @@ public class WarehouseController implements WarehouseClient {
     @GetMapping("/address")
     public AddressDto getAddress() {
         return warehouseService.getAddress();
+    }
+
+    @Override
+    @PostMapping("/assembly")
+    public BookedProductsDto assemblyOrder(AssemblyProductsForOrderRequest request) {
+        return null;
+    }
+
+    @Override
+    @PostMapping("/return")
+    public void returnProducts(Map<UUID, Integer> products) {
+
     }
 }
