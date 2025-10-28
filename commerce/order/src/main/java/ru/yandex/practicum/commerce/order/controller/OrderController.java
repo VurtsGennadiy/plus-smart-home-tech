@@ -75,7 +75,7 @@ public class OrderController implements OrderClient {
      * Обращение к сервису payment: POST payment/
      */
     @Override
-    @PostMapping("/order/payment")
+    @PostMapping("/payment")
     public OrderDto paymentInit(@RequestBody UUID orderId) {
         return orderService.paymentInit(orderId);
     }
@@ -86,7 +86,7 @@ public class OrderController implements OrderClient {
      * Устанавливаем статус PAID
      */
     @Override
-    @PostMapping("/order/payment/success")
+    @PostMapping("/payment/success")
     public OrderDto paymentSuccess(@RequestBody UUID orderId) {
         return orderService.paymentSuccess(orderId);
     }
@@ -97,7 +97,7 @@ public class OrderController implements OrderClient {
      * Устанавливаем статус PAYMENT_FAILED
      */
     @Override
-    @PostMapping("/order/payment/failed")
+    @PostMapping("/payment/failed")
     public OrderDto paymentFail(@RequestBody UUID orderId) {
         return orderService.paymentFailed(orderId);
     }
@@ -108,7 +108,7 @@ public class OrderController implements OrderClient {
      * Устанавливаем статус ON_ASSEMBLY
      */
     @Override
-    @PostMapping("/order/assembly")
+    @PostMapping("/assembly")
     public OrderDto assemblyInit(@RequestBody UUID orderId) {
         return orderService.assemblyInit(orderId);
     }
@@ -118,7 +118,7 @@ public class OrderController implements OrderClient {
      * Устанавливаем статус ASSEMBLED
      */
     @Override
-    @PostMapping("/order/assembly/success")
+    @PostMapping("/assembly/success")
     public OrderDto assemblySuccess(@RequestBody UUID orderId) {
         return orderService.assemblySuccess(orderId);
     }
@@ -128,7 +128,7 @@ public class OrderController implements OrderClient {
      * Устанавливаем статус ASSEMBLY_FAILED
      */
     @Override
-    @PostMapping("/order/assembly/failed")
+    @PostMapping("/assembly/failed")
     public OrderDto assemblyFailed(@RequestBody UUID orderId) {
         return orderService.assemblyFailed(orderId);
     }

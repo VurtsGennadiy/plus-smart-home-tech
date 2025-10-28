@@ -136,15 +136,19 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
         OrderDto orderDto = orderMapper.toDto(order);
 
-        PaymentDto payment = paymentClient.payment(orderDto);
-        order.setPaymentId(payment.getPaymentId());
-        order.setState(OrderState.ON_PAYMENT);
-        orderRepository.save(order);
+        PaymentDto payment = paymentClient.createPayment(orderDto);
+
+        transactionTemplate.executeWithoutResult(status -> {
+            order.setPaymentId(payment.getPaymentId());
+            order.setState(OrderState.ON_PAYMENT);
+            orderRepository.save(order);
+        });
         return orderMapper.toDto(order);
     }
 
     /**
-     * Успешная оплата
+     * Успешная оплата.
+     * Метод вызывается из сервиса payment.
      */
     @Override
     @Loggable
@@ -159,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * Неудачная оплата
+     * Метод вызывается из сервиса payment.
      */
     @Override
     @Loggable

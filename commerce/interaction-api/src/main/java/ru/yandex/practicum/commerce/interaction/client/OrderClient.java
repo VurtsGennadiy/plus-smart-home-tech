@@ -30,22 +30,22 @@ public interface OrderClient {
     @PostMapping("/calculate/total")
     OrderDto calculateTotal(@RequestBody UUID orderId);
 
-    @PostMapping("/order/payment")
+    @PostMapping("/payment")
     OrderDto paymentInit(@RequestBody UUID orderId);
 
-    @PostMapping("/order/payment/success")
+    @PostMapping("/payment/success")
     OrderDto paymentSuccess(@RequestBody UUID orderId);
 
-    @PostMapping("/order/payment/failed")
+    @PostMapping("/payment/failed")
     OrderDto paymentFail(@RequestBody UUID orderId);
 
-    @PostMapping("/order/assembly")
+    @PostMapping("/assembly")
     OrderDto assemblyInit(@RequestBody UUID orderId);
 
-    @PostMapping("/order/assembly/success")
+    @PostMapping("/assembly/success")
     OrderDto assemblySuccess(@RequestBody UUID orderId);
 
-    @PostMapping("/order/assembly/failed")
+    @PostMapping("/assembly/failed")
     OrderDto assemblyFailed(@RequestBody UUID orderId);
 
     @PostMapping("/delivery")

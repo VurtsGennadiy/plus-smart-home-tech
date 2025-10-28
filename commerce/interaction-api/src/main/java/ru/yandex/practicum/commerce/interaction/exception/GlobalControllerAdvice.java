@@ -83,4 +83,12 @@ public class GlobalControllerAdvice {
         ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, responseStatus);
     }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundEx(EntityNotFoundException ex) {
+        HttpStatus responseStatus = HttpStatus.NOT_FOUND;
+        ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, responseStatus);
+    }
 }
