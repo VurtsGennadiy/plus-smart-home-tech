@@ -9,7 +9,7 @@ public enum OrderState {
     ASSEMBLED, // Собран
     ASSEMBLY_FAILED, // Неудачная сборка
     DELIVERY_CREATED, // Создана доставка (товары ещё не передали)
-    ON_DELIVERY, // Товары передан в доставку
+    ON_DELIVERY, // Заказ передан в доставку
     DELIVERED, // Доставлен
     DELIVERY_FAILED, // Неудачная доставка
     DONE, // Выполнен

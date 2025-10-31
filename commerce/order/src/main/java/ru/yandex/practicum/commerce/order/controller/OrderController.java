@@ -44,9 +44,8 @@ public class OrderController implements OrderClient {
      */
     @Override
     @PostMapping("/calculate/delivery")
-    public OrderDto calculateDelivery(@RequestBody String orderId) {
-        UUID uuid = UUID.fromString(orderId.replace("\"", ""));
-        return orderService.calculateDeliveryPrice(uuid);
+    public OrderDto calculateDelivery(@RequestBody UUID orderId) {
+        return orderService.calculateDeliveryPrice(orderId);
     }
 
 
@@ -115,6 +114,7 @@ public class OrderController implements OrderClient {
 
     /**
      * Сборка заказа успешно завершена
+     * Вызов метода из сервиса warehouse: POST warehouse/assembly/success
      * Устанавливаем статус ASSEMBLED
      */
     @Override
@@ -125,6 +125,7 @@ public class OrderController implements OrderClient {
 
     /**
      * Сборка заказа успешно завершена
+     * Вызов метода из сервиса warehouse: POST warehouse/assembly/failed
      * Устанавливаем статус ASSEMBLY_FAILED
      */
     @Override
@@ -140,6 +141,15 @@ public class OrderController implements OrderClient {
     @PostMapping("/delivery")
     public OrderDto deliveryInit(@RequestBody UUID orderId) {
         return orderService.deliveryInit(orderId);
+    }
+
+    /**
+     * Товары переданы в доставку
+     * Метод вызывается из сервиса delivery: POST delivery/picked
+     */
+    @PostMapping("/delivery/shipped")
+    public OrderDto deliveryShipped(@RequestBody UUID orderId) {
+        return orderService.deliveryShipped(orderId);
     }
 
     /**

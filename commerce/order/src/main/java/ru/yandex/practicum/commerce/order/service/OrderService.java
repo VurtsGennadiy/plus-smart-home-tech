@@ -32,6 +32,8 @@ public interface OrderService {
 
     OrderDto deliveryInit(UUID orderId);
 
+    OrderDto deliveryShipped(UUID orderId);
+
     OrderDto deliverySuccess(UUID orderId);
 
     OrderDto deliveryFailed(UUID orderId);

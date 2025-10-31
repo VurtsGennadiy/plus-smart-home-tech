@@ -24,3 +24,17 @@ CREATE TABLE IF NOT EXISTS warehouse.stocks (
     quantity INT NOT NULL,
     PRIMARY KEY (product_id, address_id)
 );
+
+CREATE TABLE IF NOT EXISTS warehouse.bookings (
+    booking_id UUID PRIMARY KEY,
+    order_id UUID NOT NULl UNIQUE,
+    delivery_id UUID,
+    state VARCHAR(20) NOT NULL DEFAULT 'ON_ASSEMBLY'
+);
+
+CREATE TABLE IF NOT EXISTS warehouse.booking_products (
+    booking_id UUID REFERENCES warehouse.bookings(booking_id) ON DELETE CASCADE,
+    product_id UUID,
+    quantity INT NOT NULL,
+    PRIMARY KEY (booking_id, product_id)
+);

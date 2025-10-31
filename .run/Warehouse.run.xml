@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Warehouse" type="Application" factoryName="Application" singleton="false">
+    <envs>
+      <env name="PORT" value="8773" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="ru.yandex.practicum.commerce.warehouse.Warehouse" />
     <module name="warehouse" />
     <extension name="coverage">

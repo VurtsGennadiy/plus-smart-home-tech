@@ -22,7 +22,7 @@ public interface OrderClient {
     List<OrderDto> getUserOrders(@RequestHeader(USERNAME_HEADER) String username);
 
     @PostMapping("/calculate/delivery")
-    OrderDto calculateDelivery(@RequestBody String orderId);
+    OrderDto calculateDelivery(@RequestBody UUID orderId);
 
     @PostMapping("/calculate/products")
     OrderDto calculateProducts(@RequestBody UUID orderId);
@@ -50,6 +50,9 @@ public interface OrderClient {
 
     @PostMapping("/delivery")
     OrderDto deliveryInit(@RequestBody UUID orderId);
+
+    @PostMapping("/delivery/shipped")
+    OrderDto deliveryShipped(@RequestBody UUID orderId);
 
     @PostMapping("/delivery/success")
     OrderDto deliverySuccess(@RequestBody UUID orderId);

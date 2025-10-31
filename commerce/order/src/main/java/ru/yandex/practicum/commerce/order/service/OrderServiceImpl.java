@@ -19,13 +19,14 @@ import ru.yandex.practicum.commerce.interaction.dto.order.ProductReturnRequest;
 import ru.yandex.practicum.commerce.interaction.dto.payment.PaymentDto;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.AssemblyProductsForOrderRequest;
 import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
+import ru.yandex.practicum.commerce.interaction.exception.EntityNotFoundException;
 import ru.yandex.practicum.commerce.interaction.logging.Loggable;
 import ru.yandex.practicum.commerce.order.dal.*;
-import ru.yandex.practicum.commerce.order.exception.OrderNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -74,21 +75,23 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Loggable
+    @Transactional
     public OrderDto calculateDeliveryPrice(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         OrderDto orderDto = orderMapper.toDto(order);
 
+        // запрашиваем адрес склада у сервиса warehouse
         Address toAddress = order.getDeliveryAddress();
         AddressDto toAddressDto = addressMapper.toDto(toAddress);
         AddressDto fromAddressDto = warehouseClient.getAddress();
 
+        // запрашиваем стоимость доставки у сервиса delivery
         CalculateDeliveryDto calculateDeliveryDto = new CalculateDeliveryDto();
         calculateDeliveryDto.setOrder(orderDto);
         calculateDeliveryDto.setToAddress(toAddressDto);
         calculateDeliveryDto.setFromAddress(fromAddressDto);
-
         BigDecimal deliveryPrice = deliveryClient.calculateDeliveryPrice(calculateDeliveryDto);
+
         order.setDeliveryPrice(deliveryPrice);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -99,9 +102,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Loggable
+    @Transactional
     public OrderDto calculateProductsPrice(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         OrderDto orderDto = orderMapper.toDto(order);
 
         BigDecimal productsPrice = paymentClient.calculateProductsCost(orderDto);
@@ -115,9 +118,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Loggable
+    @Transactional
     public OrderDto calculateTotalPrice(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         OrderDto orderDto = orderMapper.toDto(order);
 
         BigDecimal totalPrice = paymentClient.calculateTotalCost(orderDto);
@@ -132,8 +135,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Loggable
     public OrderDto paymentInit(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         OrderDto orderDto = orderMapper.toDto(order);
 
         PaymentDto payment = paymentClient.createPayment(orderDto);
@@ -154,8 +156,7 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto paymentSuccess(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         order.setState(OrderState.PAID);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -169,8 +170,7 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto paymentFailed(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
         order.setState(OrderState.PAYMENT_FAILED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -181,17 +181,22 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Loggable
+    @Transactional
     public OrderDto assemblyInit(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
-
-        AssemblyProductsForOrderRequest request = new AssemblyProductsForOrderRequest();
-        request.setOrderId(orderId);
-        request.setProducts(order.getProducts());
-        warehouseClient.assemblyOrder(request);
+        Order order = getOrderById(orderId);
+        if (OrderState.PAID != order.getState()) {
+            throw new IllegalStateException("Заказ должен быть оплачен перед сборкой");
+        }
 
         order.setState(OrderState.ON_ASSEMBLY);
         orderRepository.save(order);
+
+        AssemblyProductsForOrderRequest request = new AssemblyProductsForOrderRequest();
+        request.setOrderId(orderId);
+        request.setCartId(order.getShoppingCartId());
+        request.setProducts(order.getProducts());
+        warehouseClient.assemblyOrder(request);
+
         return orderMapper.toDto(order);
     }
 
@@ -202,9 +207,7 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto assemblySuccess(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
-
+        Order order = getOrderById(orderId);
         order.setState(OrderState.ASSEMBLED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -217,9 +220,7 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto assemblyFailed(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
-
+        Order order = getOrderById(orderId);
         order.setState(OrderState.ASSEMBLY_FAILED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -230,9 +231,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     @Loggable
+    @Transactional
     public OrderDto deliveryInit(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
+
+        if (OrderState.ASSEMBLED != order.getState()) {
+            throw new IllegalStateException("Заказ должен быть собран перед доставкой");
+        }
 
         Address toAddress = order.getDeliveryAddress();
         AddressDto toAddressDto = addressMapper.toDto(toAddress);
@@ -241,6 +246,9 @@ public class OrderServiceImpl implements OrderService {
                 .fromAddress(fromAddressDto)
                 .toAddress(toAddressDto)
                 .orderId(orderId)
+                .deliveryVolume(order.getDeliveryVolume())
+                .deliveryWeight(order.getDeliveryWeight())
+                .fragile(order.getFragile())
                 .build();
 
         deliveryDto = deliveryClient.createDelivery(deliveryDto);
@@ -252,15 +260,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * Заказ передан в доставку
+     */
+    @Override
+    @Loggable
+    @Transactional
+    public OrderDto deliveryShipped(UUID orderId) {
+        Order order = getOrderById(orderId);
+        order.setState(OrderState.ON_DELIVERY);
+        orderRepository.save(order);
+        return orderMapper.toDto(order);
+    }
+
+    /**
      * Успешная доставка заказа
      */
     @Override
     @Loggable
     @Transactional
     public OrderDto deliverySuccess(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
-
+        Order order = getOrderById(orderId);
         order.setState(OrderState.DELIVERED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -273,9 +292,7 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto deliveryFailed(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
-
+        Order order = getOrderById(orderId);
         order.setState(OrderState.DELIVERY_FAILED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -285,12 +302,15 @@ public class OrderServiceImpl implements OrderService {
      * Запрос на возврат товаров
      */
     @Override
+    @Loggable
+    @Transactional
     public OrderDto returnProducts(ProductReturnRequest request) {
-        Optional<Order> orderOptional = orderRepository.findById(request.getOrderId());
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(request.getOrderId().toString()));
-
-        warehouseClient.returnProducts(request.getProducts());
+        Order order = getOrderById(request.getOrderId());
+        if (OrderState.COMPLETED == order.getState()) {
+            throw new IllegalStateException("Заказ завершен, возврат товаров невозможен");
+        }
         order.setState(OrderState.PRODUCT_RETURNED);
+        warehouseClient.returnProducts(request.getProducts());
         return orderMapper.toDto(order);
     }
 
@@ -301,11 +321,20 @@ public class OrderServiceImpl implements OrderService {
     @Loggable
     @Transactional
     public OrderDto orderCompleted(UUID orderId) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        Order order = orderOptional.orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        Order order = getOrderById(orderId);
+
+        Set<OrderState> validStates = Set.of(OrderState.DELIVERED, OrderState.PRODUCT_RETURNED, OrderState.ASSEMBLED);
+        if (!validStates.contains(order.getState())) {
+            throw new IllegalStateException(String.format("Заказ не может быть завершен в статусе %s", order.getState()));
+        }
 
         order.setState(OrderState.COMPLETED);
         orderRepository.save(order);
         return orderMapper.toDto(order);
+    }
+
+    private Order getOrderById(UUID orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order", orderId.toString()));
     }
 }

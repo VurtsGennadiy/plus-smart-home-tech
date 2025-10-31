@@ -7,11 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction.dto.warehouse.*;
 import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AssemblyProductsForOrderRequest;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
 
 import java.util.Map;
 import java.util.UUID;
@@ -32,8 +29,17 @@ public interface WarehouseClient {
     AddressDto getAddress();
 
     @PostMapping("/assembly")
-    BookedProductsDto assemblyOrder(AssemblyProductsForOrderRequest request);
+    BookedProductsDto assemblyOrder(@RequestBody AssemblyProductsForOrderRequest request);
 
     @PostMapping("/return")
-    void returnProducts(Map<UUID, Integer> products);
+    void returnProducts(@RequestBody Map<UUID, Integer> products);
+
+    @PostMapping("/assembly/success")
+    void assemblySuccess(@RequestBody UUID bookingId);
+
+    @PostMapping("/assembly/failed")
+    void assemblyFailed(@RequestBody UUID bookingId);
+
+    @PostMapping("/shipped")
+    void shippedToDelivery(@RequestBody ShippedToDeliveryRequest request);
 }
