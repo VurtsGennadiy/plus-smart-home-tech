@@ -4,11 +4,11 @@ spring:
     gateway:
       discovery.locator.enabled: true # использовать Discovery Service.
       routes: # описание роутов
-        - id: shopping_cart_service_route # название роута
-          uri: lb://shopping-cart/**  # путь, на который будет передаваться запрос, lb - найти сервис с помощью балансировщика нагрузки
 
+        - id: shopping_cart_service_route # название роута
+          uri: lb://shopping-cart  # путь, на который будет передаваться запрос, lb - найти сервис с помощью балансировщика нагрузки
           predicates: # условия, по которым определяется должен ли роут обрабатывать запрос
-            - Path=/shopping-cart
+            - Path=/shopping-cart/**
           filters: # фильтры для модификации запроса перед его отправкой в сервис, или ответа клиенту
             - PrefixPath=/api/v1 # добавляет префикс в начало пути запроса
 
@@ -22,3 +22,31 @@ spring:
               args:
                 retries: 3
                 statuses: NOT_FOUND
+
+        - id: order_service_route
+          uri: lb://order
+          predicates:
+            - Path=/order/**
+          filters:
+            - PrefixPath=/api/v1
+
+        - id: payment_service_route
+          uri: lb://payment
+          predicates:
+            - Path=/payment/**
+          filters:
+            - PrefixPath=/api/v1
+
+        - id: delivery_service_route
+          uri: lb://delivery
+          predicates:
+            - Path=/delivery/**
+          filters:
+            - PrefixPath=/api/v1
+
+        - id: warehouse_service_route
+          uri: lb://warehouse
+          predicates:
+            - Path=/warehouse/**
+          filters:
+            - PrefixPath=/api/v1
