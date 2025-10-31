@@ -5,16 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.commerce.interaction.client.OrderClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddProductToWarehouseRequest;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddressDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.BookedProductsDto;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.NewProductInWarehouseRequest;
+import ru.yandex.practicum.commerce.interaction.dto.warehouse.*;
+import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
 import ru.yandex.practicum.commerce.interaction.logging.Loggable;
-import ru.yandex.practicum.commerce.warehouse.dal.entity.Address;
-import ru.yandex.practicum.commerce.warehouse.dal.entity.ProductAttributes;
-import ru.yandex.practicum.commerce.warehouse.dal.entity.ProductStock;
-import ru.yandex.practicum.commerce.warehouse.dal.entity.ProductStockPK;
+import ru.yandex.practicum.commerce.warehouse.dal.entity.*;
 import ru.yandex.practicum.commerce.warehouse.dal.repository.ProductAttributesRepository;
 import ru.yandex.practicum.commerce.warehouse.dal.repository.ProductStockRepository;
 import ru.yandex.practicum.commerce.warehouse.exception.NoSpecifiedProductInWarehouseException;
@@ -32,8 +28,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class WarehouseServiceImpl implements WarehouseService {
+    private final OrderClient orderClient;
     private final ProductStockRepository stockRepository;
     private final ProductAttributesRepository attributesRepository;
+    private final BookingService bookingService;
     private final AddressService addressService;
     private Address address;
 
@@ -67,7 +65,6 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Transactional(readOnly = true)
     @Loggable
     public BookedProductsDto checkStocks(CartDto cart) {
-        log.info("Check stocks for cart {}", cart.getProducts());
         Map<UUID, Integer> cartProducts = cart.getProducts();
         List<ProductStockPK> productStockPKs = cartProducts.keySet().stream()
                 .map(productId -> new ProductStockPK(productId, address.getId())).toList();
@@ -105,11 +102,15 @@ public class WarehouseServiceImpl implements WarehouseService {
         for (Map.Entry<UUID, Integer> cartEntry : cartProducts.entrySet()) {
             ProductAttributes attributes = attributesMap.get(cartEntry.getKey());
             deliveryWeight += attributes.getWeight();
-            deliveryVolume += attributes.getHeight() * attributes.getWidth() * attributes.getDepth();
+            deliveryVolume += (attributes.getHeight() * attributes.getWidth() * attributes.getDepth());
             if (attributes.getFragile()) {
                 fragile = true;
             }
         }
+
+        // округляем до 2 десятичных знаков
+        deliveryWeight = (double) Math.round(100 * deliveryWeight) / 100;
+        deliveryVolume = (double) Math.round(100 * deliveryVolume) / 100;
 
         return BookedProductsDto.builder()
                 .deliveryWeight(deliveryWeight)
@@ -131,6 +132,74 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .orElse(new ProductStock(address, request.getProductId(), 0));
         stock.setQuantity(stock.getQuantity() + request.getQuantity());
         stockRepository.save(stock);
+    }
+
+    /**
+     * Забронировать товары для сборки заказа
+     */
+    @Override
+    @Loggable
+    @Transactional
+    public BookedProductsDto assemblyOrder(AssemblyProductsForOrderRequest request) {
+        BookedProductsDto bookedDto = checkStocks(new CartDto(request.getCartId(), request.getProducts()));
+        bookingService.createNewBooking(request);
+
+        // уменьшаем остатки запасов
+        Map<UUID, Integer> products = request.getProducts();
+        List<ProductStockPK> productsPKs = products.keySet().stream()
+                .map(productId -> new ProductStockPK(productId, address.getId())).toList();
+
+        List<ProductStock> stocks = stockRepository.findAllById(productsPKs);
+        stocks.forEach(stock -> stock.setQuantity(
+                stock.getQuantity() - products.get(stock.getId().getProductId())
+        ));
+
+        stockRepository.saveAll(stocks);
+        return bookedDto;
+    }
+
+    /**
+     * Сборка заказа успешно завершена
+     */
+    @Override
+    public void assemblySuccess(UUID bookingId) {
+        Booking booking = bookingService.setStatusAssemblySuccess(bookingId);
+        orderClient.assemblySuccess(booking.getOrderId());
+    }
+
+    /**
+     * Неудачная сборка заказа
+     */
+    @Override
+    public void assemblyFailed(UUID bookingId) {
+        Booking booking = bookingService.setStatusAssemblyFailed(bookingId);
+        orderClient.assemblyFailed(booking.getOrderId());
+    }
+
+    /**
+     * Передать товары в доставку
+     */
+    @Override
+    public void shippedToDelivery(ShippedToDeliveryRequest request) {
+        bookingService.shippedToDelivery(request);
+    }
+
+    /**
+     * Принять возврат товаров на склад
+     */
+    @Override
+    @Loggable
+    @Transactional
+    public void returnProducts(Map<UUID, Integer> products) {
+        List<ProductStockPK> productsPKs = products.keySet().stream()
+                .map(productId -> new ProductStockPK(productId, address.getId())).toList();
+
+        List<ProductStock> stocks = stockRepository.findAllById(productsPKs);
+        stocks.forEach(stock -> stock.setQuantity(
+                stock.getQuantity() + products.get(stock.getId().getProductId())
+        ));
+
+        stockRepository.saveAll(stocks);
     }
 
     @Override

@@ -41,6 +41,6 @@ public class AddressServiceImpl implements AddressService {
     public Address getAddress() {
         List<Address> addresses = addressRepository.findAll();
         int index = new Random().nextInt(addresses.size());
-        return addresses.get(index);
+        return addresses.getFirst(); // убираю рандомность склада, чтобы не городить костыли
     }
 }

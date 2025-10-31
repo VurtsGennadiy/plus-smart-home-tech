@@ -6,12 +6,17 @@ import ru.yandex.practicum.commerce.interaction.dto.store.SetProductQuantityStat
 import ru.yandex.practicum.commerce.interaction.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.interaction.dto.store.ProductCategory;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public interface StoreService {
     ProductDto createProduct(ProductDto productDto);
 
     ProductDto getProduct(UUID productId);
+
+    Map<UUID, BigDecimal> getProductsCost(Collection<UUID> productIds);
 
     PageDto<ProductDto> getProducts(ProductCategory category, Pageable pageable);
 

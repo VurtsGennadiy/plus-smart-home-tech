@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -60,5 +61,34 @@ public class GlobalControllerAdvice {
                 .status(responseStatus)
                 .header("Content-Type", "application/json")
                 .body(ex.contentUTF8());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleNotAuthorizedUser(NotAuthorizedUserException ex) {
+        HttpStatus responseStatus = HttpStatus.UNAUTHORIZED;
+        ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
+        log.warn("User not authorized for this operation");
+        return new ResponseEntity<>(errorResponse, responseStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleMissingRequestHeader(MissingRequestHeaderException ex) {
+        HttpStatus responseStatus;
+        if ("X-Auth-User".equals(ex.getHeaderName())) {
+            return handleNotAuthorizedUser(new NotAuthorizedUserException("Authentication required"));
+        } else {
+            responseStatus = HttpStatus.BAD_REQUEST;
+            log.warn("Missing request headers: {}", ex.getMessage());
+        }
+        ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, responseStatus);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundEx(EntityNotFoundException ex) {
+        HttpStatus responseStatus = HttpStatus.NOT_FOUND;
+        ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, responseStatus);
     }
 }

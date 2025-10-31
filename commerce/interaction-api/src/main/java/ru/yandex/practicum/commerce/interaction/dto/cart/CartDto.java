@@ -17,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 public class CartDto {
-    UUID ShoppingCartId;
+    UUID shoppingCartId;
 
     /**
      * Отображение идентификатора продукта на количество единиц продукта в корзине.
