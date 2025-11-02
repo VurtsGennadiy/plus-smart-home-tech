@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.interaction.client.ShoppingCartClient;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
 import ru.yandex.practicum.commerce.interaction.dto.cart.ChangeProductQuantityRequest;
-import ru.yandex.practicum.commerce.shoopingcart.exception.NotAuthorizedUserException;
+import ru.yandex.practicum.commerce.interaction.exception.NotAuthorizedUserException;
 import ru.yandex.practicum.commerce.shoopingcart.service.CartService;
 
 import java.util.List;

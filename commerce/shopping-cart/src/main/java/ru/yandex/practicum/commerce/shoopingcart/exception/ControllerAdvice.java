@@ -10,20 +10,11 @@ import ru.yandex.practicum.commerce.interaction.exception.ErrorResponse;
 @Slf4j
 @RestControllerAdvice
 public class ControllerAdvice {
-
     @ExceptionHandler(NoProductsInShoppingCartException.class)
     public ResponseEntity<ErrorResponse> handleNoProductsInShoppingCartException(NoProductsInShoppingCartException ex) {
         HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
         ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
         log.warn("Cart operation error: {}", ex.getMessage());
-        return new ResponseEntity<>(errorResponse, responseStatus);
-    }
-
-    @ExceptionHandler(NotAuthorizedUserException.class)
-    public ResponseEntity<ErrorResponse> handleNotAuthorized(NotAuthorizedUserException ex) {
-        HttpStatus responseStatus = HttpStatus.UNAUTHORIZED;
-        ErrorResponse errorResponse = new ErrorResponse(ex, responseStatus.value(), ex.getMessage());
-        log.warn("User not authorized for this operation");
         return new ResponseEntity<>(errorResponse, responseStatus);
     }
 }

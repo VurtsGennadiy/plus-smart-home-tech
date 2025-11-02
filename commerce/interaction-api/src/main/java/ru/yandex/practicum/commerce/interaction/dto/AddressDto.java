@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.interaction.dto.warehouse;
+package ru.yandex.practicum.commerce.interaction.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -3,7 +3,7 @@ package ru.yandex.practicum.commerce.warehouse.dal.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.yandex.practicum.commerce.interaction.dto.warehouse.AddressDto;
+import ru.yandex.practicum.commerce.interaction.dto.AddressDto;
 
 @Entity
 @Table(name = "addresses")

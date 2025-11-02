@@ -13,6 +13,9 @@ import ru.yandex.practicum.commerce.interaction.dto.store.ProductDto;
 import ru.yandex.practicum.commerce.interaction.dto.store.ProductCategory;
 import ru.yandex.practicum.commerce.shoppingstore.service.StoreService;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -39,6 +42,16 @@ public class StoreController implements ShoppingStoreClient {
     public PageDto<ProductDto> getProducts(@RequestParam ProductCategory category,
                                            @PageableDefault(size = 20, sort = "productName") Pageable pageable) {
         return storeService.getProducts(category, pageable);
+    }
+
+    /**
+     * Получить цену товаров по Id.
+     * Метод вызывается из сервиса Payment.
+     */
+    @Override
+    @PostMapping("/cost")
+    public Map<UUID, BigDecimal> getProductsCost(@RequestBody Collection<UUID> productIds) {
+        return storeService.getProductsCost(productIds);
     }
 
     @Override

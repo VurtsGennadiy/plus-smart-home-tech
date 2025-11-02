@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.shoopingcart.exception;
+package ru.yandex.practicum.commerce.interaction.exception;
 
 /**
  * Исключение, которое возникает при попытке выполнить операцию без надлежащей авторизации пользователя.

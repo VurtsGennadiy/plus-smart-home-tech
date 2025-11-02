@@ -9,7 +9,7 @@ import ru.yandex.practicum.commerce.interaction.logging.LoggingConfig;
 
 @SpringBootApplication
 @Import({ExceptionHandlingConfig.class, LoggingConfig.class})
-@EnableFeignClients
+@EnableFeignClients("ru.yandex.practicum.commerce.interaction")
 public class Warehouse {
     public static void main(String[] args) {
         SpringApplication.run(Warehouse.class, args);

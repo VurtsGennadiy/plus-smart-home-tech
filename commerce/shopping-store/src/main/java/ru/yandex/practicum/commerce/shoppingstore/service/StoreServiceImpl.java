@@ -16,7 +16,12 @@ import ru.yandex.practicum.commerce.interaction.dto.store.ProductState;
 import ru.yandex.practicum.commerce.shoppingstore.dal.ProductRepository;
 import ru.yandex.practicum.commerce.shoppingstore.exception.ProductNotFoundException;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -91,5 +96,13 @@ public class StoreServiceImpl implements StoreService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Loggable
+    public Map<UUID, BigDecimal> getProductsCost(Collection<UUID> productIds) {
+        List<Product> products = productRepository.findAllById(productIds);
+        return products.stream().collect(Collectors.toMap(Product::getProductId, Product::getPrice));
     }
 }
