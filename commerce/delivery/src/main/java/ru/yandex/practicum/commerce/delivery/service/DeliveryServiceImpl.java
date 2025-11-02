@@ -37,36 +37,37 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     /**
-     * Рассчёт цены доставки
+     * Расчёт цены доставки
      */
     @Override
     @Loggable
     public BigDecimal calculateDeliveryPrice(CalculateDeliveryDto dto) {
         OrderDto order = dto.getOrder();
 
-        final double base = 0.5d;
-        double total = 0;
+        final double base = 5d;
+        BigDecimal total = BigDecimal.valueOf(base);
 
         if (dto.getFromAddress().getCity().contains("ADDRESS_1")) {
-            total = base;
+            total = total.add(total);
         } else if (dto.getFromAddress().getCity().contains("ADDRESS_2")) {
-            total = 2 * base;
+            total = total.add(total.multiply(BigDecimal.TWO));
         } else {
-            throw new IllegalArgumentException("Неизвестный адресс склада");
+            throw new IllegalArgumentException("Неизвестный адрес склада");
         }
 
         if (order.getFragile()) {
-            total = 1.2 * total;
+            total = total.multiply(BigDecimal.valueOf(1.2));
         }
 
-        total = total + order.getDeliveryWeight() * 0.3;
-        total = total + order.getDeliveryVolume() * 0.2;
+        total = total.add(BigDecimal.valueOf(order.getDeliveryWeight() * 0.3));
+        total = total.add(BigDecimal.valueOf(order.getDeliveryVolume() * 0.2));
 
-        if (!dto.getFromAddress().getStreet().equals(dto.getToAddress().getStreet())) {
-            total = total * 1.2;
+        if (!(dto.getFromAddress().getCity().equals(dto.getToAddress().getCity()) &&
+                dto.getFromAddress().getStreet().equals(dto.getToAddress().getStreet()))) {
+            total = total.multiply(BigDecimal.valueOf(1.2));
         }
 
-        return new BigDecimal(total).setScale(2, RoundingMode.DOWN);
+        return total.setScale(2, RoundingMode.DOWN);
     }
 
     /**

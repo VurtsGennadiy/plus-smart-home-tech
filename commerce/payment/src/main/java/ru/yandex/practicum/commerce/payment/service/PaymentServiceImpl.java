@@ -1,6 +1,7 @@
 package ru.yandex.practicum.commerce.payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.interaction.dto.order.OrderDto;
@@ -17,6 +18,7 @@ import ru.yandex.practicum.commerce.payment.exception.NotEnoughInfoInOrderToCalc
 import java.math.BigDecimal;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {

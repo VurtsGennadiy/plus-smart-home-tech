@@ -25,7 +25,7 @@ public class DeliveryController implements DeliveryClient {
     }
 
     /**
-     * Рассчёт цены доставки
+     * Расчёт цены доставки
      */
     @Override
     @PostMapping("/cost")
