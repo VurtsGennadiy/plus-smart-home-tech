@@ -1,4 +1,7 @@
 services:
+
+  # ------ Kafka ------
+
   kafka:
     image: confluentinc/confluent-local:7.4.3
     hostname: kafka
@@ -34,13 +37,7 @@ services:
                              --bootstrap-server kafka:29092'"
     init: true
 
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - "8088:8080"
-    environment:
-      DYNAMIC_CONFIG_ENABLED: 'true'
+  # ------ База данных ------
 
   db:
     image: postgres:16.1
@@ -88,16 +85,41 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    restart: on-failure
+
+  gateway:
+    container_name: gateway
+    build: ./infra/gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+    depends_on:
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
 
   # ------ Сервисы коммерции ------
 
   shopping-store:
     container_name: shopping-store
     build: ./commerce/shopping-store
+    ports:
+      - "8763:8763"
     environment:
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
       - POSTGRES_HOST=db
+      - SERVER_PORT=8763
     depends_on:
+      db:
+        condition: service_healthy
       config-server:
         condition: service_healthy
     restart: on-failure
@@ -105,10 +127,15 @@ services:
   shopping-cart:
     container_name: shopping-cart
     build: ./commerce/shopping-cart
+    ports:
+      - "8764:8764"
     environment:
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
       - POSTGRES_HOST=db
+      - SERVER_PORT=8764
     depends_on:
+      db:
+        condition: service_healthy
       config-server:
         condition: service_healthy
     restart: on-failure
@@ -116,13 +143,147 @@ services:
   warehouse:
     container_name: warehouse
     build: ./commerce/warehouse
+    ports:
+      - "8765:8765"
     environment:
       - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
       - POSTGRES_HOST=db
+      - SERVER_PORT=8765
     depends_on:
+      db:
+        condition: service_healthy
       config-server:
         condition: service_healthy
     restart: on-failure
 
+  order:
+    build: ./commerce/order
+    container_name: order
+    ports:
+      - "8766:8766"
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+      - SERVER_PORT=8766
+    depends_on:
+      db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8766/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
 
+  payment:
+    build: ./commerce/payment
+    container_name: payment
+    ports:
+      - "8767:8767"
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+      - SERVER_PORT=8767
+    depends_on:
+      db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8767/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
 
+  delivery:
+    build: ./commerce/delivery
+    container_name: delivery
+    ports:
+      - "8768:8768"
+    environment:
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+      - POSTGRES_HOST=db
+      - SERVER_PORT=8768
+    depends_on:
+      db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8768/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
+
+    # ------ Сервисы телеметрии ------
+
+  collector:
+    build: ./telemetry/collector
+    container_name: telemetry-collector
+    depends_on:
+      - kafka
+      - config-server
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SERVER_PORT=8769
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+    ports:
+      - "8769:8769"
+      - "59091:59091" # gRPS server port
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8769/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
+
+  aggregator:
+    build: ./telemetry/aggregator
+    container_name: telemetry-aggregator
+    depends_on:
+      - kafka
+      - config-server
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SERVER_PORT=8770
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+    ports:
+      - "8770:8770"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8770/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure
+
+  analyzer:
+    build: ./telemetry/analyzer
+    container_name: telemetry-analyzer
+    depends_on:
+      - kafka
+      - db
+      - config-server
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - POSTGRES_HOST=db
+      - SERVER_PORT=8771
+      - EUREKA_SERVER_URL=http://discovery-server:8761/eureka/
+    ports:
+      - "8771:8771"
+      - "59090:59090" # gRPS client port
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8771/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    restart: on-failure

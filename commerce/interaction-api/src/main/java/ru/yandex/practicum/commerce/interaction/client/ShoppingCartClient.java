@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.interaction.client;
 
-import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.interaction.dto.cart.CartDto;
@@ -15,7 +14,6 @@ public interface ShoppingCartClient {
 
     @GetMapping
     CartDto getCart(@RequestParam(required = false) String username);
-
 
     @PutMapping
     CartDto putProduct(@RequestParam(required = false) String username,
